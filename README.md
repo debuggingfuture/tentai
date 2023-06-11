@@ -1,70 +1,70 @@
-# Getting Started with Create React App
+# Turborepo Docker starter
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is an official Docker starter Turborepo.
 
-## Available Scripts
+## Using this example
 
-In the project directory, you can run:
+Run the following command:
 
-### `npm start`
+```sh
+npx create-turbo@latest -e with-docker
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## What's inside?
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+This turborepo uses [Yarn](https://classic.yarnpkg.com/lang/en/) as a package manager. It includes the following packages/apps:
 
-### `npm test`
+### Apps and Packages
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- `web`: a [Next.js](https://nextjs.org/) app
+- `api`: an [Express](https://expressjs.com/) server
+- `ui`: ui: a React component library
+- `eslint-config-custom`: `eslint` configurations for client side applications (includes `eslint-config-next` and `eslint-config-prettier`)
+- `eslint-config-custom-server`: `eslint` configurations for server side applications (includes `eslint-config-next` and `eslint-config-prettier`)
+- `scripts`: Jest configurations
+- `logger`: Isomorphic logger (a small wrapper around console.log)
+- `tsconfig`: tsconfig.json;s used throughout the monorepo
 
-### `npm run build`
+Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Docker
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+This repo is configured to be built with Docker, and Docker compose. To build all apps in this repo:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+# Create a network, which allows containers to communicate
+# with each other, by using their container name as a hostname
+docker network create app_network
 
-### `npm run eject`
+# Build prod using new BuildKit engine
+COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -f docker-compose.yml build
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Start prod in detached mode
+docker-compose -f docker-compose.yml up -d
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Open http://localhost:3000.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+To shutdown all running containers:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
+# Stop all running containers
+docker kill $(docker ps -q) && docker rm $(docker ps -a -q)
+```
 
-## Learn More
+### Remote Caching
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+This example includes optional remote caching. In the Dockerfiles of the apps, uncomment the build arguments for `TURBO_TEAM` and `TURBO_TOKEN`. Then, pass these build arguments to your Docker build.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+You can test this behavior using a command like:
 
-### Code Splitting
+`docker build -f apps/web/Dockerfile . --build-arg TURBO_TEAM=“your-team-name” --build-arg TURBO_TOKEN=“your-token“ --no-cache`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Utilities
 
-### Analyzing the Bundle Size
+This Turborepo has some additional tools already setup for you:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- [TypeScript](https://www.typescriptlang.org/) for static type checking
+- [ESLint](https://eslint.org/) for code linting
+- [Jest](https://jestjs.io) test runner for all things JavaScript
+- [Prettier](https://prettier.io) for code formatting
