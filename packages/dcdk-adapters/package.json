@@ -5,9 +5,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist",
-    "dev": "nodemon --exec \"node -r esbuild-register ./src/index.ts\" -e .ts",
     "lint": "tsc --noEmit && eslint \"src/**/*.ts*\"",
-    "start": "node -r esbuild-register ./src/index.ts",
     "test": "jest --detectOpenHandles"
   },
   "dependencies": {
@@ -15,7 +13,8 @@
     "@spheron/site": "^1.0.0",
     "@spheron/storage": "^1.0.16",
     "body-parser": "^1.19.0",
-    "constructs": "^10.2.50"
+    "constructs": "^10.2.50",
+    "cross-fetch": "^3.1.6"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
