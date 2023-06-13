@@ -1,0 +1,3 @@
+name: ipfs-static-page
+runtime: nodejs
+description: simple ipfs static page example

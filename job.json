@@ -1,0 +1,17 @@
+{
+  "with": "ubuntu",
+  "do": "docker/run",
+  "inputs": {
+    "entrypoint": ["echo", "hello", "world"],
+    "workdir": "/",
+    "mounts": {},
+    "outputs": {
+      "/outputs": ""
+    },
+    "env": {
+      "HELLO": "world"
+    }
+  },
+  "meta": {}
+}
+

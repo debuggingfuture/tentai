@@ -1,0 +1,9 @@
+import pulumi from "@pulumi/pulumi";
+
+export interface BacalhauJobProps {}
+
+export class BacalhauJob extends pulumi.ComponentResource {
+  constructor(name, opts) {
+    super("messier:resource:BacalhauJob", name, {}, opts);
+  }
+}

@@ -21,6 +21,16 @@ services:
       - 3001:3001
     networks:
       - app_network
+  bacalhau-wrapper:
+    container_name: bacalhau-wrapper
+    build:
+      context: .
+      dockerfile: ./apps/bacalhau-wrapper/Dockerfile
+    restart: always
+    ports:
+      - 3001:3001
+    networks:
+      - app_network
 
 # Define a network, which allows containers to communicate
 # with each other, by using their container name as a hostname

@@ -1,0 +1,56 @@
+{
+  "name": "dcdk",
+  "resources": {
+    "dcdk:index:SpheronStaticPage": {
+      "isComponent": true,
+      "inputProperties": {
+        "indexContent": {
+          "type": "string",
+          "description": "The HTML content for index.html."
+        }
+      },
+      "requiredInputs": ["indexContent"],
+      "properties": {
+        "websiteUrl": {
+          "type": "string",
+          "description": "The website URL."
+        }
+      },
+      "required": ["websiteUrl"]
+    },
+    "dcdk:index:IpfsStaticPage": {
+      "isComponent": true,
+      "inputProperties": {
+        "indexContent": {
+          "type": "string",
+          "description": "The HTML content for index.html."
+        }
+      },
+      "requiredInputs": ["indexContent"],
+      "properties": {
+        "websiteUrl": {
+          "type": "string",
+          "description": "The website URL."
+        }
+      },
+      "required": ["websiteUrl"]
+    }
+  },
+  "language": {
+    "nodejs": {
+      "dependencies": {
+        "@spheron/site": "^1.0.0"
+      },
+      "devDependencies": {
+        "typescript": "^5.1.3"
+      },
+      "respectSchemaVersion": true
+    },
+    "python": {
+      "requires": {
+        "pulumi": ">=3.0.0,<4.0.0"
+      },
+      "respectSchemaVersion": true
+    }
+  }
+}

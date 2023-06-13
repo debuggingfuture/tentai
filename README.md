@@ -1,3 +1,23 @@
+## pulumi deps management
+
+- modified from [pulumi offiical example](https://github.com/pulumi/pulumi-component-provider-ts-boilerplate)which has go dependnecy on codegen
+- we have to build the pulumi sdk with codegen
+- as a hack we use turbo repo internal pacakges and link to sdk/nodejs/index.ts
+
+- compile to binary is necesary for pulumi to pick up
+- for faster development cycles, ensure provider and adapter is unit tested
+
+- For now we will use single provider for all related resources (IPFS, bacalhau etc)
+- and strategy patterns to delgate until we observe need for dynamic swapping provider
+- https://www.pulumi.com/blog/disable-default-providers/
+
+## setup
+
+- TODO be in makefile
+- make install
+- under /apps/hub/src/ipfs-static-page
+  - pulumi plugin install resource -f ../../../../packages/pulumi-component-dcdk/provider/cmd/pulumi-resource-dcdk/bin dcdk 0.0.1
+
 # Turborepo Docker starter
 
 This is an official Docker starter Turborepo.
@@ -19,9 +39,6 @@ This turborepo uses [Yarn](https://classic.yarnpkg.com/lang/en/) as a package ma
 - `web`: a [Next.js](https://nextjs.org/) app
 - `api`: an [Express](https://expressjs.com/) server
 - `ui`: ui: a React component library
-- `eslint-config-custom`: `eslint` configurations for client side applications (includes `eslint-config-next` and `eslint-config-prettier`)
-- `eslint-config-custom-server`: `eslint` configurations for server side applications (includes `eslint-config-next` and `eslint-config-prettier`)
-- `scripts`: Jest configurations
 - `logger`: Isomorphic logger (a small wrapper around console.log)
 - `tsconfig`: tsconfig.json;s used throughout the monorepo
 

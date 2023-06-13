@@ -1,5 +1,5 @@
 {
-  "name": "cdck",
+  "name": "hub",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -11,7 +11,10 @@
     "test": "jest --detectOpenHandles"
   },
   "dependencies": {
+    "@pulumi/cloudflare": "^5.3.0",
+    "@pulumi/dcdk": "0.0.1",
     "body-parser": "^1.19.0",
+    "constructs": "^10.2.50",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "morgan": "^1.10.0"
