@@ -1,0 +1,5 @@
+{
+  "python.analysis.extraPaths": [
+    "./packages/pulumi-component-dcdk/sdk/python/bin"
+  ]
+}

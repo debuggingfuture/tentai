@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import * as pulumi from "@pulumi/pulumi";
+import { ConstructType } from "./constructType";
 import { IpfsFile } from "./ipfsFIle";
 
 export interface IpfsStaticPageArgs {
@@ -27,9 +28,9 @@ export class IpfsStaticPage extends pulumi.ComponentResource {
     args: IpfsStaticPageArgs,
     opts?: pulumi.ComponentResourceOptions
   ) {
-    super("dcdk:index:StaticPage", name, args, opts);
+    super(ConstructType.IpfsStaticPage, name, args, opts);
 
-    console.log("content", args);
+    console.log("content2", args);
 
     const file = new IpfsFile("a", "b");
 

@@ -15,49 +15,15 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as provider from "@pulumi/pulumi/provider";
 import * as resource from "@pulumi/pulumi/resource";
+import { BacalhauJobImage, BacalhauJobImageArgs } from "./bacalhauJobImage";
+import { ConstructType } from "./constructType";
 import { IpfsStaticPage, IpfsStaticPageArgs } from "./ipfsStaticPage";
-
+import {
+  buildSiteWithTemplate,
+  createIpfsStaticPageWithFolder,
+} from "./spheron/spheron";
 import { SpheronStaticPage, SpheronStaticPageArgs } from "./spheronStaticPage";
-
-export class Provider implements provider.Provider {
-  constructor(readonly version: string, readonly schema: string) {}
-
-  async create(urn: resource.URN, inputs: any) {
-    console.log("create resource", urn, inputs);
-
-    return {
-      id: "1",
-    };
-  }
-
-  async delete(id: resource.ID, urn: resource.URN, props: any) {
-    console.log("delete resource", urn);
-
-    return;
-  }
-
-  async diff(urn: resource.URN, inputs: any) {
-    console.log("diff", urn, inputs);
-
-    return {};
-  }
-
-  async construct(
-    name: string,
-    type: string,
-    inputs: pulumi.Inputs,
-    options: pulumi.ComponentResourceOptions
-  ): Promise<provider.ConstructResult> {
-    switch (type) {
-      case "dcdk:index:IpfsStaticPage":
-        return await constructIpfsStaticPage(name, inputs, options);
-      case "dcdk:index:SpheronStaticPage":
-        return await constructSpheronStaticPage(name, inputs, options);
-      default:
-        throw new Error(`unknown resource type ${type}`);
-    }
-  }
-}
+import { printSnapshotSystem } from "./utils";
 
 async function constructSpheronStaticPage(
   name: string,
@@ -98,4 +64,85 @@ async function constructIpfsStaticPage(
       websiteUrl: staticPage.websiteUrl,
     },
   };
+}
+
+async function constructBacalhauJobImage(
+  name: string,
+  inputs: pulumi.Inputs,
+  options: pulumi.ComponentResourceOptions
+): Promise<provider.ConstructResult> {
+  const jobImage = new BacalhauJobImage(
+    name,
+    inputs as BacalhauJobImageArgs,
+    options
+  );
+
+  // Return the component resource's URN and outputs as its state.
+  return {
+    urn: jobImage.urn,
+    state: {
+      imageName: jobImage.imageName,
+    },
+  };
+}
+
+type ConstructStrategy = (
+  name: string,
+  inputs: pulumi.Inputs,
+  options: pulumi.ComponentResourceOptions
+) => Promise<provider.ConstructResult>;
+
+const CONSTRUCT_STRATEGIES: { [key: string]: ConstructStrategy } = {
+  [ConstructType.IpfsStaticPage]: constructIpfsStaticPage,
+  [ConstructType.SpheronStaticPage]: constructSpheronStaticPage,
+  [ConstructType.BacalhauJobImage]: constructBacalhauJobImage,
+};
+
+/**
+ * create method is only triggered for custom resources not components
+ */
+
+export class Provider implements provider.Provider {
+  constructor(readonly version: string, readonly schema: string) {}
+
+  async create(urn: resource.URN, inputs: any) {
+    console.log("create resource", urn, inputs);
+    // delegate
+
+    if (urn.includes(ConstructType.SpheronFolder)) {
+      await buildSiteWithTemplate(inputs.folderPath);
+    }
+
+    // handle at compile time
+    return {
+      id: "1",
+    };
+  }
+
+  async delete(id: resource.ID, urn: resource.URN, props: any) {
+    console.log("delete resource", urn);
+
+    return;
+  }
+
+  async diff(urn: resource.URN, inputs: any) {
+    console.log("diff", urn, inputs);
+
+    return {};
+  }
+
+  async construct(
+    name: string,
+    type: string,
+    inputs: pulumi.Inputs,
+    options: pulumi.ComponentResourceOptions
+  ): Promise<provider.ConstructResult> {
+    const strategy = CONSTRUCT_STRATEGIES[type as ConstructType];
+    if (!strategy) {
+      console.log(`supported ${Object.keys(CONSTRUCT_STRATEGIES)}`);
+      throw new Error(`unknown resource type ${type}`);
+    }
+    printSnapshotSystem();
+    return await strategy(name, inputs, options);
+  }
 }

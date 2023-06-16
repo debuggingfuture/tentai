@@ -6,10 +6,13 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
     "experimentalDecorators": true,
     "pretty": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true
-  }
+  },
+  "exclude": ["templates"]
 }

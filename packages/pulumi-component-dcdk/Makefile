@@ -12,20 +12,21 @@ SCHEMA_PATH     := ${WORKING_DIR}/schema.json
 
 generate:: gen_nodejs_sdk
 
-build:: build_provider build_nodejs_sdk
+build:: build_provider build_nodejs_sdk build_python_sdk
 
-install:: install_provider install_nodejs_sdk
+install:: install_provider 
 
 # Ensure all dependencies are installed
 ensure::
 	yarn install
 
 # Provider
+# ignore template files
 build_provider:: ensure
 	cp ${SCHEMA_PATH} provider/cmd/${PROVIDER}/
 	cd provider/cmd/${PROVIDER}/ && \
        		yarn install && \
-       		yarn tsc --outDir ./bin && \
+       		yarn tsc -p . --outDir ./bin && \
        		cp package.json schema.json ./bin && \
        		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" bin/package.json
 
@@ -77,7 +78,9 @@ install_dotnet_sdk:: build_dotnet_sdk
 	mkdir -p ${WORKING_DIR}/nuget
 	find . -name '*.nupkg' -print -exec cp -p {} ${WORKING_DIR}/nuget \;
 
-
+## modified to copy template too
+## currently we use softlink to package which include also node_modueles
+## no reliable way to exclude with pkg, probably best just delete it
 # Node.js SDK
 
 gen_nodejs_sdk::
@@ -90,6 +93,7 @@ build_nodejs_sdk:: gen_nodejs_sdk
 		yarn run tsc --version && \
 		yarn run tsc && \
 		cp -R scripts/ bin && \
+		cp -R ../../templates/ bin && \
 		cp ../../README.md ../../LICENSE package.json yarn.lock ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json && \
 		rm ./bin/package.json.bak
@@ -104,6 +108,7 @@ gen_python_sdk::
 	rm -rf sdk/python
 	cd provider/cmd/${CODEGEN} && go run . python ../../../sdk/python ${SCHEMA_PATH}
 	cp ${WORKING_DIR}/README.md sdk/python
+	cp -R provider/cmd/${PROVIDER}/templates sdk/python/pulumi_dcdk
 
 build_python_sdk:: PYPI_VERSION := ${VERSION}
 build_python_sdk:: gen_python_sdk
@@ -113,3 +118,5 @@ build_python_sdk:: gen_python_sdk
 		sed -i.bak -e 's/^VERSION = .*/VERSION = "$(PYPI_VERSION)"/g' -e 's/^PLUGIN_VERSION = .*/PLUGIN_VERSION = "$(VERSION)"/g' ./bin/setup.py && \
 		rm ./bin/setup.py.bak && \
 		cd ./bin && python3 setup.py build sdist
+
+# under bin, we hv build, dist, pulumi_dcdk 

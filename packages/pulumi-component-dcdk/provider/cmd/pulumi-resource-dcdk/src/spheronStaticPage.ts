@@ -13,6 +13,10 @@
 // limitations under the License.
 
 import * as pulumi from "@pulumi/pulumi";
+import { ConstructType } from "./constructType";
+import * as path from "path";
+import * as fs from "fs";
+import { SpheronFolder } from "./spheron";
 
 export interface SpheronStaticPageArgs {
   githubUrl: pulumi.Input<string>;
@@ -26,7 +30,20 @@ export class SpheronStaticPage extends pulumi.ComponentResource {
     args: SpheronStaticPageArgs,
     opts?: pulumi.ComponentResourceOptions
   ) {
-    super("dcdk:index:StaticPage", name, args, opts);
+    super(ConstructType.SpheronStaticPage, name, args, opts);
+
+    const templatePath = path.resolve(
+      __dirname,
+      "../templates/tentai-template-nextjs"
+    );
+    console.log("templatePath", templatePath);
+    const results = fs.readdirSync(templatePath);
+    console.log("results", results);
+
+    new SpheronFolder("folder", { folderPath: templatePath });
+
+    // await spheron.createIpfsStaticPageWithFolder(templatePath, name);
+    // handle at compile time
 
     this.websiteUrl = pulumi.output("https://www.google.com");
     this.registerOutputs({

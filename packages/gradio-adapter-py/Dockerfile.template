@@ -1,0 +1,22 @@
+ARG IMAGE_WITH_TAG=python:3.10
+
+
+FROM $IMAGE_WITH_TAG
+
+RUN "echo" "Hello from gradio-adapter-py"
+# RUN apt-get update --allow-releaseinfo-change && apt-get install -y git  --allow-releaseinfo-change
+
+# for translations built error getaddrinfo() related to git
+
+ADD question_answering ./question_answering
+# RUN "python" "image_classifer_2/run.py"
+
+RUN ls -ltra question_answering/run.py
+RUN git -v
+RUN python -m pip install gradio
+
+
+RUN "python" "/question_answering/run.py" "I am really excited to be here" "eng_Latn" "fra_Latn"
+
+
+

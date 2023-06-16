@@ -18,6 +18,10 @@
 - under /apps/hub/src/ipfs-static-page
   - pulumi plugin install resource -f ../../../../packages/pulumi-component-dcdk/provider/cmd/pulumi-resource-dcdk/bin dcdk 0.0.1
 
+## organization
+
+- goal is to move back to dcdk-adapters
+
 # Turborepo Docker starter
 
 This is an official Docker starter Turborepo.
