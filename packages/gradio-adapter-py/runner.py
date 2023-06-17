@@ -1,6 +1,6 @@
 # https://gradio.app/interface-state/
 import gradio as gr
-import translation.demo as translate
+import translation.run as translate
 from argparse import ArgumentParser
 
 if __name__ == "__main__":
