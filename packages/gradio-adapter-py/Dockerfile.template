@@ -1,38 +1,20 @@
+# assume folder named as model
 ARG IMAGE_WITH_TAG=python:3.10
-
 
 FROM $IMAGE_WITH_TAG
 
 RUN "echo" "Hello from gradio-adapter-py"
-# RUN apt-get update --allow-releaseinfo-change && apt-get install -y git  --allow-releaseinfo-change
 
-# for translations built error getaddrinfo() related to git
-
-# ADD question_answering ./question_answering
-# # RUN "python" "image_classifer_2/run.py"
-# RUN uname -a
-# RUN ls -ltra question_answering/run.py
-# RUN apt-get update && apt-get install -y git python3
-# RUN git --version
-# RUN python3 -m pip install gradio
-
-
-# RUN "python" "/question_answering/run.py" "I am really excited to be here" "eng_Latn" "fra_Latn"
-
-
-
-ADD image_classifier_2 ./image_classifier_2
-# RUN "python" "image_classifer_2/run.py
-
-
-RUN uname -a
-RUN ls -ltra image_classifier_2/run.py
 RUN apt-get update && apt-get install -y git python3 python3-pip
 RUN git --version
-RUN python3 -m pip install gradio
-ADD requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
-ADD starfish.jpg image.jpg
+
+# build deps first so source code change can use the cache
+ADD model ./model
+RUN pip3 install -r model/requirements.txt
 
 
-RUN "python3" "/image_classifier_2/run.py" "image.jpg"
+# hit once to faciliate cache
+RUN "python3" "model/run.py"
+ADD runner.py runner.py
+
+ENTRYPOINT ["python3", "runner.py"]
