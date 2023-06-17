@@ -2,7 +2,8 @@ import requests
 import torch
 from PIL import Image
 from torchvision import transforms
-
+from argparse import ArgumentParser
+import os.path
 import gradio as gr
 
 model = torch.hub.load("pytorch/vision:v0.6.0", "resnet18", pretrained=True).eval()
@@ -24,6 +25,15 @@ inputs = gr.Image()
 outputs = gr.Label(num_top_classes=3)
 
 demo = gr.Interface(fn=predict, inputs=inputs, outputs=outputs)
+
+
+parser = ArgumentParser(description="ikjMatrix multiplication")
+parser.add_argument("-i", dest="filename", required=True,
+                    help="input file with two matrices", metavar="FILE")
+args = parser.parse_args()
+
+print("image")
+print(args.filename)
 
 if __name__ == "__main__":
     demo.launch()

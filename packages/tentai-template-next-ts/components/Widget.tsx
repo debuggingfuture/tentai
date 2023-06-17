@@ -25,6 +25,7 @@ import {
 import { submitJobWithModel } from "../libs/bacalhau/bacalhau";
 import { fetchWithSaturn } from "../libs/saturn";
 import { ModelConfig } from "../libs/model";
+import styled from "@emotion/styled";
 
 export enum TentaiUiComponentType {
   TextField = "TextField",
@@ -98,7 +99,6 @@ export const ComponentsGrid = ({
             {(component as Input).label && (
               <InputLabel htmlFor="my-input">input</InputLabel>
             )}
-
             {strategy(component)}
           </Grid>
         );
@@ -107,15 +107,25 @@ export const ComponentsGrid = ({
   );
 };
 
+export const StyledCodeBlock = styled.pre`
+  background-color: #000;
+`;
+
 export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
   const [bacalhauResults, setBacalhauResults] = React.useState({});
   const [results, setResults] = React.useState({});
   return (
-    <Grid container>
-      <Grid item container xs={6} sx={{ border: 1 }}>
+    <Grid container spacing={2}>
+      <Grid
+        item
+        container
+        xs={5}
+        justifyContent="end"
+        borderRadius="20px"
+        sx={{ margin: 2, padding: 2, backgroundColor: "white", width: "100%" }}
+      >
         <ComponentsGrid components={renderConfig.inputs} />
-        <Grid item xs={4}>
-          {" "}
+        <Grid item xs={2}>
           <Button
             onClick={async () => {
               console.log("submitJob");
@@ -134,20 +144,31 @@ export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
         </Grid>
       </Grid>
 
-      <Grid item container xs={6} sx={{ border: 1 }}>
+      <Grid
+        item
+        container
+        xs={6}
+        justifyContent="end"
+        borderRadius="20px"
+        sx={{ margin: 2, padding: 2, backgroundColor: "white", width: "100%" }}
+      >
         <ComponentsGrid components={renderConfig.outputs} />
       </Grid>
       <Grid container xs={12}>
         <Grid item xs={12}>
           <h3>Bacalhau results</h3>
           raw:
-          <pre>{JSON.stringify(bacalhauResults, null, 2)}</pre>
-          <pre>{JSON.stringify(bacalhauResults, null, 2)}</pre>
+          <StyledCodeBlock>
+            <div>{JSON.stringify(bacalhauResults, null, 2)}</div>
+            <div>{JSON.stringify(bacalhauResults, null, 2)}</div>
+          </StyledCodeBlock>
         </Grid>
         <Grid item xs={12}>
           <h3>Parsed results</h3>
           raw:
-          <pre>{JSON.stringify(results, null, 2)}</pre>
+          <StyledCodeBlock>
+            <div>{JSON.stringify(results, null, 2)}</div>
+          </StyledCodeBlock>
         </Grid>
       </Grid>
     </Grid>

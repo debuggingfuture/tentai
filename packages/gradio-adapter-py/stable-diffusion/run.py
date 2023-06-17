@@ -1,0 +1,1 @@
+# https://docs.bacalhau.org/examples/model-inference/stable-diffusion-gpu/

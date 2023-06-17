@@ -4,7 +4,7 @@ import {
   TentaiUiComponentType,
   Widget,
 } from "../components/Widget";
-import { Container, Grid, Typography } from "@mui/material";
+import { Container, Grid, Paper, Typography } from "@mui/material";
 import { GetStaticProps } from "next/types";
 
 // https://github.com/dusty-nv/jetson-inference/tree/master
@@ -47,27 +47,44 @@ export const getStaticProps: GetStaticProps<{
 
 export default function Home({ config }: { config: PageConfig }) {
   return (
-    <Container>
-      <Grid container spacing={2}>
-        <Grid container item spacing={2} xs={12}>
-          <Grid item xs={4}>
-            <h2>Shilling my AI</h2>
+    <>
+      <Container>
+        <Grid container spacing={2}>
+          <Grid container item spacing={2} xs={12}>
+            <Grid item xs={4}>
+              <h2>Shilling my AI</h2>
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container item xs={12}>
-          <Grid item xs={12}>
-            <Widget
-              modelConfig={config.modelConfig}
-              renderConfig={config.renderConfig}
-            ></Widget>
+          <Grid container item xs={12}>
+            <Grid item xs={12}>
+              <Widget
+                modelConfig={config.modelConfig}
+                renderConfig={config.renderConfig}
+              ></Widget>
+            </Grid>
           </Grid>
+          {/* <Grid container item xs={12}>
+        <Grid item xs={4}>
+          <Typography variant="subtitle1">Powered by TENTAI</Typography>
         </Grid>
-        <Grid container item xs={12}>
-          <Grid item xs={4}>
-            <Typography variant="subtitle1">Powered by Tentai✨</Typography>
-          </Grid>
+      </Grid> */}
         </Grid>
-      </Grid>
-    </Container>
+      </Container>{" "}
+      <Paper
+        sx={{
+          marginTop: "calc(10% + 60px)",
+          position: "fixed",
+          bottom: 0,
+          backgroundColor: "black",
+          color: "white",
+          width: "100%",
+        }}
+        component="footer"
+        square
+        variant="outlined"
+      >
+        <Typography variant="subtitle1">Powered by TENTAI✨</Typography>
+      </Paper>
+    </>
   );
 }

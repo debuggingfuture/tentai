@@ -1,3 +1,5 @@
 transformers==4.30.2
 gradio==3.34.0
 gradio_client==0.2.6
+torch==2.0.0
+torchvision==0.15.2
