@@ -14,6 +14,7 @@ let config = {
     job: {
       docker: { image: "ubuntu", entrypoint: ["echo", "hello"] },
     },
+    resultTypes: ["text"],
   },
   renderConfig: {
     inputs: [

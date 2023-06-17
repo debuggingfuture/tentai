@@ -5,7 +5,6 @@ export const BACALHAU_MAGIC_ENDPOINT_URL =
   "http://dashboard.bacalhau.org:1000/api/v1/run";
 
 import fetch from "cross-fetch";
-import { ModelConfig } from "../model";
 import { BacalhauConfig, Publisher, Verifier } from "./schema-bacalhau";
 
 export const withDefaultsJob = () => {
@@ -30,6 +29,7 @@ export const createJob = (
 };
 
 export const submitJob = async (job: Partial<BacalhauConfig>) => {
+  console.log("submitJob", job);
   const results = await fetch(BACALHAU_MAGIC_ENDPOINT_URL, {
     method: "POST",
     body: JSON.stringify(job),
@@ -41,9 +41,4 @@ export const submitJob = async (job: Partial<BacalhauConfig>) => {
   return {
     cid,
   };
-};
-
-export const submitJobWithModel = (modelConfig: ModelConfig) => {
-  const byModel = {};
-  return submitJob(createJob({}));
 };

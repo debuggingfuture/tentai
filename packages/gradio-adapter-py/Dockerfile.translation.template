@@ -1,0 +1,22 @@
+ARG IMAGE_WITH_TAG=python:3.10
+
+
+FROM $IMAGE_WITH_TAG
+
+RUN "echo" "Hello from gradio-adapter-py"
+
+
+ADD translation ./translation
+# RUN "python" "image_classifer_2/run.py
+
+
+RUN uname -a
+RUN ls -ltra translation/run.py
+RUN apt-get update && apt-get install -y git python3 python3-pip
+RUN git --version
+
+ADD requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+
+
+RUN "python3" "/translation/run.py" "I am a boy"

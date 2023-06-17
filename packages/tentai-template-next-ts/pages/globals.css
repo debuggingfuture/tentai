@@ -15,8 +15,8 @@
 /* https://codepen.io/jensaxena/pen/KQmvoK */
 body {
   background: radial-gradient(circle at bottom, navy 0, black 100%);
-  height: 100vh;
-  overflow: hidden;
+  height: 150vh;
+  /* overflow: hidden; */
   color: white;
 }
 

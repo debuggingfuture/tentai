@@ -13,6 +13,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
+import LinearProgress from "@mui/material/LinearProgress";
 import { TextareaAutosize } from "@mui/base";
 import {
   Button,
@@ -22,10 +23,10 @@ import {
   InputLabel,
   TextField,
 } from "@mui/material";
-import { submitJobWithModel } from "../libs/bacalhau/bacalhau";
+import { submitJob } from "../libs/bacalhau/bacalhau";
 import { fetchWithSaturn } from "../libs/saturn";
-import { ModelConfig } from "../libs/model";
 import styled from "@emotion/styled";
+import { mapJobWithModelInput, ModelConfig } from "../libs/job";
 
 export enum TentaiUiComponentType {
   TextField = "TextField",
@@ -108,14 +109,63 @@ export const ComponentsGrid = ({
 };
 
 export const StyledCodeBlock = styled.pre`
+  margin: 1px;
   background-color: #000;
+  overflow: auto;
 `;
 
+export const showProgress = (progress: number) => {
+  if (progress === 100) {
+    return <div>Done!🌟</div>;
+  }
+  if (progress > 0) {
+    return (
+      <div>
+        Loading...✨✨✨
+        <LinearProgress />
+      </div>
+    );
+  }
+  return <></>;
+};
+
 export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
-  const [bacalhauResults, setBacalhauResults] = React.useState({});
+  const [bacalhauTask, setBacalhauTask] = React.useState({
+    job: {},
+    resultTypes: [],
+    results: {},
+  });
+  const [bacalhauProgress, setBacalhauProgress] = React.useState(0);
   const [results, setResults] = React.useState({});
+
+  React.useEffect(() => {
+    (async () => {
+      const job = bacalhauTask?.job;
+      if (!job?.docker) {
+        return;
+      }
+      console.log("job updated", job);
+      const bacalhauResults = await submitJob(job);
+      // TODO add event. now just dismis it
+      console.log("bacalhauResults", bacalhauResults);
+      setBacalhauProgress(100);
+      setBacalhauTask({
+        ...bacalhauTask,
+        results: bacalhauResults,
+      });
+      const { cid } = bacalhauResults;
+
+      if (cid) {
+        // TODO by  resultTypes: ["text"],
+        const results = await fetchWithSaturn("/ipfs/" + cid);
+        const text = await results.text();
+        setResults(text);
+      }
+    })();
+  }, [bacalhauTask.job?.docker]);
+
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} justifyContent="space-around">
       <Grid
         item
         container
@@ -129,14 +179,20 @@ export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
           <Button
             onClick={async () => {
               console.log("submitJob");
-              const bacalhauResults = await submitJobWithModel(modelConfig);
-              console.log("bacalhauResults", bacalhauResults);
-              setBacalhauResults(bacalhauResults);
-
-              const { cid } = bacalhauResults;
-              const results = await fetchWithSaturn("/ipfs/" + cid);
-              const text = await results.text();
-              setResults(text);
+              setBacalhauProgress(10);
+              const job = await mapJobWithModelInput(modelConfig, {
+                inputs: [
+                  {
+                    type: "text",
+                    value: "starfish",
+                  },
+                ],
+              });
+              setBacalhauTask({
+                ...bacalhauTask,
+                job,
+                resultTypes: modelConfig.resultTypes,
+              });
             }}
           >
             Submit
@@ -147,21 +203,36 @@ export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
       <Grid
         item
         container
-        xs={6}
+        xs={5}
         justifyContent="end"
         borderRadius="20px"
         sx={{ margin: 2, padding: 2, backgroundColor: "white", width: "100%" }}
       >
         <ComponentsGrid components={renderConfig.outputs} />
       </Grid>
-      <Grid container xs={12}>
-        <Grid item xs={12}>
-          <h3>Bacalhau results</h3>
-          raw:
-          <StyledCodeBlock>
-            <div>{JSON.stringify(bacalhauResults, null, 2)}</div>
-            <div>{JSON.stringify(bacalhauResults, null, 2)}</div>
-          </StyledCodeBlock>
+
+      <Grid item container xs={12}>
+        <Grid item xs={12} justifyContent="center" alignItems="center">
+          {showProgress(bacalhauProgress)}
+        </Grid>
+        <Grid container item xs={12} spacing={1} justifyContent="space-around">
+          <Grid item xs={12}>
+            <h3>Bacalhau results</h3>
+            raw:
+          </Grid>
+
+          <Grid item xs={5}>
+            <StyledCodeBlock>
+              Job
+              <div>{JSON.stringify(bacalhauTask?.job, null, 2)}</div>
+            </StyledCodeBlock>
+          </Grid>
+          <Grid item xs={5}>
+            <StyledCodeBlock>
+              Results
+              <div>{JSON.stringify(bacalhauTask?.results, null, 2)}</div>
+            </StyledCodeBlock>
+          </Grid>
         </Grid>
         <Grid item xs={12}>
           <h3>Parsed results</h3>

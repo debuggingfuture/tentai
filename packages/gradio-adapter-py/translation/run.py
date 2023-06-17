@@ -2,6 +2,8 @@ import gradio as gr
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 import torch
 
+from argparse import ArgumentParser
+
 # this model was loaded from https://hf.co/models
 model = AutoModelForSeq2SeqLM.from_pretrained("facebook/nllb-200-distilled-600M")
 tokenizer = AutoTokenizer.from_pretrained("facebook/nllb-200-distilled-600M")
@@ -30,4 +32,8 @@ demo = gr.Interface(
     description="This demo is a simplified version of the original [NLLB-Translator](https://huggingface.co/spaces/Narrativaai/NLLB-Translator) space"
 )
 
-demo.launch()
+if __name__ == "__main__":
+    parser = ArgumentParser(description="translations")
+    args = parser.parse_args()
+    print("teext")
+    print(args)
