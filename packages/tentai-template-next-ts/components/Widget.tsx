@@ -22,6 +22,7 @@ import {
   Input,
   InputLabel,
   TextField,
+  Typography,
 } from "@mui/material";
 import { submitJob } from "../libs/bacalhau/bacalhau";
 import { fetchWithSaturn } from "../libs/saturn";
@@ -88,8 +89,10 @@ const RENDER_STRATEGIES: Record<
 
 export const ComponentsGrid = ({
   components,
+  title,
 }: {
   components: TentaiUiComponent[];
+  title: string;
 }) => {
   return (
     <>
@@ -97,9 +100,12 @@ export const ComponentsGrid = ({
         const strategy = RENDER_STRATEGIES[component.componentType];
         return (
           <Grid key={component.componentType + "-" + i} item xs={12}>
-            {(component as Input).label && (
+            {/* {(component as Input).label && (
               <InputLabel htmlFor="my-input">input</InputLabel>
-            )}
+            )} */}
+            <Typography style={{ color: "black" }} variant="h6">
+              {title}
+            </Typography>
             {strategy(component)}
           </Grid>
         );
@@ -131,16 +137,21 @@ export const showProgress = (progress: number) => {
 
 export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
   const [bacalhauTask, setBacalhauTask] = React.useState({
-    job: {},
+    job: {
+      docker: {},
+    },
     resultTypes: [],
     results: {},
   });
   const [bacalhauProgress, setBacalhauProgress] = React.useState(0);
   const [results, setResults] = React.useState({});
 
+  const [outputs, setOutputs] = React.useState(renderConfig.outputs);
+
   React.useEffect(() => {
     (async () => {
       const job = bacalhauTask?.job;
+
       if (!job?.docker) {
         return;
       }
@@ -156,10 +167,21 @@ export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
       const { cid } = bacalhauResults;
 
       if (cid) {
-        // TODO by  resultTypes: ["text"],
-        const results = await fetchWithSaturn("/ipfs/" + cid);
-        const text = await results.text();
-        setResults(text);
+        // TODO by  resultTypes : ["text", "image"] and multiple
+        const rawResults = await fetchWithSaturn("/ipfs/" + cid);
+        const text = await rawResults.text();
+        const results = [text];
+        setResults(results);
+
+        // TODO use _.zipWith
+        setOutputs(
+          outputs.map((output, i) => {
+            return {
+              ...output,
+              value: results?.[i],
+            };
+          })
+        );
       }
     })();
   }, [bacalhauTask.job?.docker]);
@@ -174,7 +196,7 @@ export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
         borderRadius="20px"
         sx={{ margin: 2, padding: 2, backgroundColor: "white", width: "100%" }}
       >
-        <ComponentsGrid components={renderConfig.inputs} />
+        <ComponentsGrid title="input" components={renderConfig.inputs} />
         <Grid item xs={2}>
           <Button
             onClick={async () => {
@@ -188,8 +210,10 @@ export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
                   },
                 ],
               });
+
               setBacalhauTask({
                 ...bacalhauTask,
+                // @ts-ignore
                 job,
                 resultTypes: modelConfig.resultTypes,
               });
@@ -208,7 +232,7 @@ export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
         borderRadius="20px"
         sx={{ margin: 2, padding: 2, backgroundColor: "white", width: "100%" }}
       >
-        <ComponentsGrid components={renderConfig.outputs} />
+        <ComponentsGrid title="output" components={outputs} />
       </Grid>
 
       <Grid item container xs={12}>

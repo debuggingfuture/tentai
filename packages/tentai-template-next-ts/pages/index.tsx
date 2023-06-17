@@ -6,7 +6,8 @@ import {
 } from "../components/Widget";
 import { Container, Grid, Paper, Typography } from "@mui/material";
 import { GetStaticProps } from "next/types";
-
+import fs from "fs";
+import path from "path";
 // https://github.com/dusty-nv/jetson-inference/tree/master
 
 let config = {
@@ -25,8 +26,11 @@ let config = {
       },
     ],
     outputs: [
+      // {
+      //   componentType: TentaiUiComponentType.Image,
+      // },
       {
-        componentType: TentaiUiComponentType.Image,
+        componentType: TentaiUiComponentType.TextArea,
       },
     ],
   },
@@ -40,9 +44,15 @@ export type PageConfig = {
 export const getStaticProps: GetStaticProps<{
   config: PageConfig;
 }> = async () => {
-  const fs = require("fs");
-  // fs.readFileSync(path.resolve('./app')
-  // config
+  // __dirname will be non usable
+  // https://nextjs.org/docs/pages/api-reference/functions/get-static-props#reading-files-use-processcwd
+
+  console.log("process.cwd()", process.cwd());
+  const rawConfig = fs.readFileSync(
+    path.resolve(process.cwd(), "./tentai.config.json")
+  );
+
+  const config = JSON.parse(rawConfig.toString());
   return { props: { config } };
 };
 
@@ -79,6 +89,7 @@ export default function Home({ config }: { config: PageConfig }) {
           backgroundColor: "black",
           color: "white",
           width: "100%",
+          textAlign: "center",
         }}
         component="footer"
         square

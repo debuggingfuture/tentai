@@ -1,3 +1,26 @@
 {
-  "name": "Hello World"
+  "name": "Translation example",
+  "modelConfig": {
+    "job": {
+      "docker": {
+        "image": "hackfs2023debuggingfuture/tentai-gradio-adapter-py:latest",
+        "entrypoint": ["Building a translation demo with TENTA!"]
+      }
+    },
+    "resultTypes": ["text"]
+  },
+  "renderConfig": {
+    "inputs": [
+      {
+        "id": "main-input",
+        "label": "input",
+        "componentType": "TextArea"
+      }
+    ],
+    "outputs": [
+      {
+        "componentType": "TextArea"
+      }
+    ]
+  }
 }
