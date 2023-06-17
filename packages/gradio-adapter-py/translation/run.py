@@ -35,5 +35,8 @@ demo = gr.Interface(
 if __name__ == "__main__":
     parser = ArgumentParser(description="translations")
     args = parser.parse_args()
+    parser.add_argument('-i', '--input')
+    parser.add_argument('-s', '--sourceEng', default='eng_Latn')
+    parser.add_argument('-s', '--sourceEng', default='spa_Latn') 
     print("teext")
     print(args)
