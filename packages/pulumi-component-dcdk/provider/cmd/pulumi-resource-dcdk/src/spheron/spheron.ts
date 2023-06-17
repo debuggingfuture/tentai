@@ -90,11 +90,17 @@ export enum TentaiUiComponentType {
   Chart = "Chart",
 }
 
+const TENTAI_CONFIG_FILENAME = "tentai.config.json";
+
 // TODO refactor
-export const buildSiteWithTemplate = async (name: string) => {
+export const buildSiteWithTemplate = async (
+  name: string,
+  folderPath: string
+) => {
+  // TODO use folderPath from input
   const templatePath = path.resolve(
     __dirname,
-    "../../templates/tentai-template-nextjs"
+    "../../templates/tentai-template-next-ts"
   );
   const client = new SpheronClientStorage(getClientConfig());
   console.log("buildSiteWithTemplate");
@@ -107,13 +113,15 @@ export const buildSiteWithTemplate = async (name: string) => {
   });
 
   const configFileContent = {
+    name: "Translation example",
     modelConfig: {
       job: {
         docker: {
-          image: "docker.io/tentai-gradio-adapter-py:latest",
-          entrypoint: ["echo", "hello"],
+          image: "hackfs2023debuggingfuture/tentai-gradio-adapter-py:latest",
+          entrypoint: ["Building a translation demo with TENTA!"],
         },
       },
+      resultTypes: ["text"],
     },
     renderConfig: {
       inputs: [
@@ -131,14 +139,14 @@ export const buildSiteWithTemplate = async (name: string) => {
     },
   };
 
-  const configPath = path.resolve(tempDir, "./tentai-config.json");
+  const configPath = path.resolve(tempDir, "./" + TENTAI_CONFIG_FILENAME);
   fs.writeFileSync(configPath, JSON.stringify(configFileContent));
 
   const buildFolder = path.resolve(tempDir, "./out");
   console.log("buildProcess out", buildProcess.stdout.toString());
   console.log("buildProcess err", buildProcess.stderr.toString());
 
-  console.log("create SpheronFolder");
+  console.log("create SpheronSite");
   const { protocolLink, dynamicLinks } = await createIpfsStaticPageWithFolder(
     buildFolder,
     name

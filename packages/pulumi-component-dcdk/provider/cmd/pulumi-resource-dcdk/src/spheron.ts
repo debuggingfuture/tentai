@@ -34,9 +34,6 @@ export class SpheronFolder extends pulumi.CustomResource {
     opts?: pulumi.CustomResourceOptions
   ) {
     super(ConstructType.SpheronFolder, name, args, opts);
-
-    // await spheron.createIpfsStaticPageWithFolder(templatePath, name);
-    // handle at compile time
   }
 }
 

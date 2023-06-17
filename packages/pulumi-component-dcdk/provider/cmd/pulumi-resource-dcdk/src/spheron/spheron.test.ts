@@ -81,6 +81,10 @@ describe("spheron", () => {
   });
 
   test.only("#buildSiteWithTemplate", async () => {
-    await buildSiteWithTemplate("test");
+    const templatePath = path.resolve(
+      __dirname,
+      "../../templates/tentai-template-next-ts"
+    );
+    await buildSiteWithTemplate("test", templatePath);
   });
 });

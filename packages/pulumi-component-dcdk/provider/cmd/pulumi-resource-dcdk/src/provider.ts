@@ -23,7 +23,25 @@ import {
   createIpfsStaticPageWithFolder,
 } from "./spheron/spheron";
 import { SpheronStaticPage, SpheronStaticPageArgs } from "./spheronStaticPage";
+import { TentaiPage, TentaiPageArgs } from "./tentaiPage";
 import { printSnapshotSystem } from "./utils";
+
+async function constructTentaiPage(
+  name: string,
+  inputs: pulumi.Inputs,
+  options: pulumi.ComponentResourceOptions
+): Promise<provider.ConstructResult> {
+  // Create the component resource.
+  const staticPage = new TentaiPage(name, inputs as TentaiPageArgs, options);
+
+  // Return the component resource's URN and outputs as its state.
+  return {
+    urn: staticPage.urn,
+    state: {
+      websiteUrl: staticPage.websiteUrl,
+    },
+  };
+}
 
 async function constructSpheronStaticPage(
   name: string,
@@ -95,6 +113,8 @@ type ConstructStrategy = (
 const CONSTRUCT_STRATEGIES: { [key: string]: ConstructStrategy } = {
   [ConstructType.IpfsStaticPage]: constructIpfsStaticPage,
   [ConstructType.SpheronStaticPage]: constructSpheronStaticPage,
+
+  [ConstructType.TentaiPage]: constructTentaiPage,
   [ConstructType.BacalhauJobImage]: constructBacalhauJobImage,
 };
 
@@ -110,7 +130,7 @@ export class Provider implements provider.Provider {
     // delegate
 
     if (urn.includes(ConstructType.SpheronFolder)) {
-      await buildSiteWithTemplate(inputs.folderPath);
+      await buildSiteWithTemplate(urn, inputs.folderPath);
     }
 
     // handle at compile time
@@ -142,7 +162,8 @@ export class Provider implements provider.Provider {
       console.log(`supported ${Object.keys(CONSTRUCT_STRATEGIES)}`);
       throw new Error(`unknown resource type ${type}`);
     }
-    printSnapshotSystem();
+    // For debug
+    // printSnapshotSystem();
     return await strategy(name, inputs, options);
   }
 }

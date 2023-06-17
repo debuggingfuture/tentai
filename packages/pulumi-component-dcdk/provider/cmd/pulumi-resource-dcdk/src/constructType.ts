@@ -4,4 +4,5 @@ export enum ConstructType {
   SpheronFolder = "dcdk:index:SpheronFolder",
   SpheronBucket = "dcdk:index:SpheronBucket",
   BacalhauJobImage = "dcdk:index:BacalhauJobImage",
+  TentaiPage = "dcdk:index:TentaiPage",
 }

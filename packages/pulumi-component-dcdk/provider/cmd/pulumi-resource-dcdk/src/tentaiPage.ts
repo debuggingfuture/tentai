@@ -17,6 +17,7 @@ import * as docker from "@pulumi/docker";
 import { ConstructType } from "./constructType";
 import * as path from "path";
 import * as fs from "fs";
+import { SpheronStaticPage } from "./spheronStaticPage";
 
 // at a tentai page
 // we have hosted
@@ -28,19 +29,32 @@ export interface TentaiPageArgs {
 // always build image
 
 export class TentaiPage extends pulumi.ComponentResource {
-  //   public readonly imageName: pulumi.Output<string>;
+  public readonly websiteUrl: pulumi.Output<string>;
 
   constructor(
     name: string,
     args: TentaiPageArgs,
     opts?: pulumi.ComponentResourceOptions
   ) {
-    super(ConstructType.BacalhauJobImage, name, args, opts);
+    super(ConstructType.TentaiPage, name, args, opts);
 
-    // new SpheronStaticPage();
+    // always this template for now
+    const templatePath = path.resolve(
+      __dirname,
+      "../templates/tentai-template-next-ts"
+    );
+    console.log("templatePath", templatePath);
+
+    const results = new SpheronStaticPage("static-site", {
+      folderPath: templatePath,
+    });
+
+    this.websiteUrl = pulumi.output("https://www.google.com");
+
+    console.log("static page ", results);
 
     this.registerOutputs({
-      //   imageName: this.imageName,
+      websiteUrl: this.websiteUrl,
     });
   }
 }

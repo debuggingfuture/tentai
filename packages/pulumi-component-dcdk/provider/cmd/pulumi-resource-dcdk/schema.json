@@ -1,12 +1,29 @@
 {
   "name": "dcdk",
   "resources": {
+    "dcdk:index:TentaiPage": {
+      "isComponent": true,
+      "inputProperties": {
+        "customTemplate": {
+          "type": "string",
+          "description": "The template to use."
+        }
+      },
+      "requiredInputs": [],
+      "properties": {
+        "websiteUrl": {
+          "type": "string",
+          "description": "The website URL."
+        }
+      },
+      "required": ["websiteUrl"]
+    },
     "dcdk:index:SpheronStaticPage": {
       "isComponent": true,
       "inputProperties": {
         "folderPath": {
           "type": "string",
-          "description": "The HTML content for index.html."
+          "description": "The folder path to deploy."
         }
       },
       "requiredInputs": ["folderPath"],

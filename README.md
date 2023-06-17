@@ -1,3 +1,9 @@
+## setup
+
+- At packages/pulumi-component-dcdk
+  - make install build_python_sdk
+- When running pulumi setup PYTHONPATH to include the gnereated sdk e.g. export PYTHONPATH=packages/pulumi-component-dcdk/sdk/python/bin
+
 ## pulumi deps management
 
 - modified from [pulumi offiical example](https://github.com/pulumi/pulumi-component-provider-ts-boilerplate)which has go dependnecy on codegen
@@ -11,16 +17,10 @@
 - and strategy patterns to delgate until we observe need for dynamic swapping provider
 - https://www.pulumi.com/blog/disable-default-providers/
 
-## setup
-
-- TODO be in makefile
-- make install
-- under /apps/hub/src/ipfs-static-page
-  - pulumi plugin install resource -f ../../../../packages/pulumi-component-dcdk/provider/cmd/pulumi-resource-dcdk/bin dcdk 0.0.1
-
 ## organization
 
-- goal is to move back to dcdk-adapters
+- goal is to extra common libraries to packages/dcdk-adapters
+  - while currently there is deps hell with `pkg`
 
 # Turborepo Docker starter
 

@@ -19,7 +19,7 @@ import * as fs from "fs";
 import { SpheronFolder } from "./spheron";
 
 export interface SpheronStaticPageArgs {
-  githubUrl: pulumi.Input<string>;
+  folderPath: pulumi.Input<string>;
 }
 
 export class SpheronStaticPage extends pulumi.ComponentResource {
@@ -32,19 +32,14 @@ export class SpheronStaticPage extends pulumi.ComponentResource {
   ) {
     super(ConstructType.SpheronStaticPage, name, args, opts);
 
-    const templatePath = path.resolve(
-      __dirname,
-      "../templates/tentai-template-nextjs"
-    );
-    console.log("templatePath", templatePath);
-    const results = fs.readdirSync(templatePath);
-    console.log("results", results);
+    // DEBUG
+    // const results = fs.readdirSync(args.folderPath);
+    // console.log("template directory", results);
 
-    new SpheronFolder("folder", { folderPath: templatePath });
-
-    // await spheron.createIpfsStaticPageWithFolder(templatePath, name);
-    // handle at compile time
-
+    const results = new SpheronFolder("folder", {
+      folderPath: args.folderPath,
+    });
+    console.log("folder results", results);
     this.websiteUrl = pulumi.output("https://www.google.com");
     this.registerOutputs({
       websiteUrl: this.websiteUrl,

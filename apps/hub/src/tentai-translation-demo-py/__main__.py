@@ -8,16 +8,14 @@ import pulumi
 import pulumi_dcdk as dcdk
 
 
-# page = dcdk.IpfsStaticPage('some-page', index_content="Hello, world!")
+site = dcdk.TentaiPage('some-spheron-page', custom_template="tentai-template-next-ts")
+
+# deploy from template
+site = dcdk.SpheronStaticPage('demo-site', folder_path="")
 
 
-# site = dcdk.Tentai('some-spheron-page', folder_path="dummy")
+# pre-built
+bacalhauJobImage = dcdk.BacalhauJobImage('model-image', image_name='docker.io/hackfs2023debuggingfuture/tentai-gradio-adapter-py:latest')
 
-# only tentai shd be template1
-site = dcdk.SpheronStaticPage('some-spheron-page', folder_path="dummy")
-
-
-# bacalhauJobImage = dcdk.BacalhauJobImage('job-image', image_name='ubuntu:latest')
-
-
-bacalhauJobImage = dcdk.BacalhauJobImage('job-image-2', image_name='docker.io/tentai-gradio-adapter-py:latest', custom_template='gradio-adapter-py')
+# build directly from docker template
+# bacalhauJobImage = dcdk.BacalhauJobImage('model-image', image_name='docker.io/tentai-gradio-adapter-py:latest', custom_template='gradio-adapter-py')
