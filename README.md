@@ -1,3 +1,8 @@
+# TENTAI✨
+
+- Check out the ETHGLOBAL Project Profile
+- "Tentai" is Celestial object in Japanese. Code name used in codebase is `dcdk`
+
 ## setup
 
 - At packages/pulumi-component-dcdk
