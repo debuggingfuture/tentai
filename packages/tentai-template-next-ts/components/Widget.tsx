@@ -40,6 +40,7 @@ export type Input = {
   id?: string;
   key?: string;
   label?: string;
+  value?: string;
   componentType: TentaiUiComponentType;
 };
 
@@ -59,7 +60,7 @@ export const renderTextField = (props: any) => {
 
 export const renderTextArea = (props: any) => {
   const { componentType, ...rest } = props;
-  return <TextareaAutosize minRows={10} {...rest} />;
+  return <TextareaAutosize sx={{ minWidth: "400px" }} minRows={20} {...rest} />;
 };
 
 export const renderImage = () => {
@@ -137,26 +138,26 @@ export const showProgress = (progress: number) => {
 
 export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
   const [bacalhauTask, setBacalhauTask] = React.useState({
-    job: {
-      docker: {},
-    },
-    resultTypes: [],
+    ...modelConfig,
     results: {},
   });
   const [bacalhauProgress, setBacalhauProgress] = React.useState(0);
   const [results, setResults] = React.useState({});
-
+  const [inputs, setInputs] = React.useState(renderConfig.inputs.map((a) => a));
   const [outputs, setOutputs] = React.useState(renderConfig.outputs);
 
   React.useEffect(() => {
     (async () => {
       const job = bacalhauTask?.job;
-
-      if (!job?.docker) {
+      console.log("raw", modelConfig, job);
+      //@ts-ignore
+      if (!job?.docker?.entrypoint) {
         return;
       }
       console.log("job updated", job);
-      const bacalhauResults = await submitJob(job);
+      const bacalhauResults = await submitJob(job).catch((err) => {
+        console.log("err", err);
+      });
       // TODO add event. now just dismis it
       console.log("bacalhauResults", bacalhauResults);
       setBacalhauProgress(100);
@@ -164,11 +165,11 @@ export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
         ...bacalhauTask,
         results: bacalhauResults,
       });
-      const { cid } = bacalhauResults;
+      const cid = bacalhauResults?.cid!;
 
       if (cid) {
         // TODO by  resultTypes : ["text", "image"] and multiple
-        const rawResults = await fetchWithSaturn("/ipfs/" + cid);
+        const rawResults = await fetchWithSaturn("/ipfs/" + cid + "/stdout");
         const text = await rawResults.text();
         const results = [text];
         setResults(results);
@@ -184,7 +185,8 @@ export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
         );
       }
     })();
-  }, [bacalhauTask.job?.docker]);
+    //@ts-ignore
+  }, [bacalhauTask.job?.docker?.entrypoint]);
 
   return (
     <Grid container spacing={2} justifyContent="space-around">
@@ -200,17 +202,23 @@ export const Widget = ({ modelConfig, renderConfig }: WidgetProps) => {
         <Grid item xs={2}>
           <Button
             onClick={async () => {
-              console.log("submitJob");
+              console.log("submitJob", renderConfig, inputs);
               setBacalhauProgress(10);
               const job = await mapJobWithModelInput(modelConfig, {
-                inputs: [
-                  {
-                    type: "text",
-                    value: "starfish",
-                  },
-                ],
+                inputs: inputs.map((input, i) => ({
+                  type: "text",
+                  // value: inputs[0],
+                  // onValueChange: (event: any) => {
+                  //   input.value = event.target.value;
+                  //   const updated = inputs;
+                  //   updated[i].value = event.target.value;
+                  //   setInputs(updated);
+                  // },
+                  value:
+                    "HackFS 2023 is an event bringing together some of the top minds and experts in Ethereum Ecosystem. We enable teams to make something great in only 3 weeks by providing an abundance of web3 resources like mentors, sponsors, and software.",
+                })),
               });
-
+              console.log("job confirmed", job);
               setBacalhauTask({
                 ...bacalhauTask,
                 // @ts-ignore

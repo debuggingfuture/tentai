@@ -36,11 +36,13 @@ export class SpheronStaticPage extends pulumi.ComponentResource {
     // const results = fs.readdirSync(args.folderPath);
     // console.log("template directory", results);
 
-    const results = new SpheronFolder("folder", {
+    const results = new SpheronFolder(name + "-folder", {
       folderPath: args.folderPath,
     });
-    console.log("folder results", results);
-    this.websiteUrl = pulumi.output("https://www.google.com");
+    console.log("SpheronFolder created");
+    this.websiteUrl = pulumi.output(
+      "https://hackfs2023-test.debuggingfuture.com/"
+    );
     this.registerOutputs({
       websiteUrl: this.websiteUrl,
     });

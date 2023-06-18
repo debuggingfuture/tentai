@@ -16,57 +16,68 @@ import * as pulumi from "@pulumi/pulumi";
 import * as docker from "@pulumi/docker";
 import { ConstructType } from "./constructType";
 import * as path from "path";
-import * as fs from "fs";
+import * as fs from "fs-extra";
+import * as os from "os";
 
 export interface BacalhauJobImageArgs {
   imageName: pulumi.Input<string>;
+  modelPath: pulumi.Input<string>;
   customTemplate: pulumi.Input<string>;
 }
 
-// always build image
+// 3 options
 
-export const matchTemplate = (
+// 1 use existing models inside package
+// 2 use custom model file
+// 3 use remote image
+
+// For both 1/2, we will make use of docker template and store in model/ folder
+
+export const buildImageWithTemplate = (
+  imageName: pulumi.Input<string>,
   customTemplate: pulumi.Input<string>,
-  imageName: pulumi.Input<string>
+  modelPath?: pulumi.Input<string>
 ) => {
-  const resourceImageName = "image";
+  console.log("buildImageWithTemplate", imageName);
+  const dockerTemplatePath = path.resolve(
+    __dirname,
+    "../templates/gradio-adapter-py/Dockerfile.template"
+  );
   // use a /snapshot path at execution
+
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "dcdk-model"));
+  fs.copyFileSync(dockerTemplatePath, path.resolve(tempDir, "./Dockerfile"));
+
   if (customTemplate) {
-    console.log("build with customtemplate", customTemplate, imageName);
-    // troublesome to manage files inside package due to multiple build process
-    const dockerFileContent = `
-ARG IMAGE_WITH_TAG=python:3.10-slim
+    console.log("build with custom template");
+    const modelTemplatePath = path.resolve(
+      __dirname,
+      "../templates/gradio-adapter-py/" + customTemplate
+    );
 
-
-FROM $IMAGE_WITH_TAG
-
-RUN "echo" "Hello from gradio-adapter-py"
-
-`;
-    fs.writeFileSync("Dockerfile", dockerFileContent);
-
-    const image = new docker.Image(resourceImageName, {
-      build: {
-        args: {
-          IMAGE_WITH_TAG: "ubuntu:latest",
-        },
-        context: ".",
-        dockerfile: "Dockerfile",
-      },
-      imageName,
-      // skipPush: true,
-    });
-
-    return {
-      imageName: image.imageName,
-      image,
-    };
+    // TODO check recusive
+    fs.copySync(modelTemplatePath, tempDir, { dereference: true });
+  } else {
+    console.log("build with model path");
+    // TODO ifx
+    // fs.copySync(modelPath, tempDir, { dereference: true });
+    // ensure included in assets by pkg
   }
 
-  const image = new docker.RemoteImage(resourceImageName, { name: imageName });
+  const image = new docker.Image(imageName.valueOf() as string, {
+    build: {
+      args: {
+        IMAGE_WITH_TAG: "ubuntu:latest",
+      },
+      context: ".",
+      dockerfile: "Dockerfile",
+    },
+    imageName,
+    // skipPush: true,
+  });
 
   return {
-    imageName: image.name,
+    imageName: image.baseImageName,
     image,
   };
 };
@@ -80,9 +91,12 @@ export class BacalhauJobImage extends pulumi.ComponentResource {
   ) {
     super(ConstructType.BacalhauJobImage, name, args, opts);
 
-    const image = matchTemplate(args.customTemplate, args.imageName);
+    const image = new docker.RemoteImage(name + "-image", {
+      name: args.imageName,
+    });
+    // const image = buildImageWithTemplate(args.imageName, args.customTemplate);
 
-    this.imageName = image.imageName;
+    this.imageName = image.name;
     this.registerOutputs({
       imageName: this.imageName,
     });

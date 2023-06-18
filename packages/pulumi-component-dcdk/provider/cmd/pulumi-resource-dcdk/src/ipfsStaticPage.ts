@@ -33,8 +33,10 @@ export class IpfsStaticPage extends pulumi.ComponentResource {
     console.log("content2", args);
 
     const file = new IpfsFile("a", "b");
-
-    this.websiteUrl = pulumi.output("https://www.google.com");
+    console.log("file", file);
+    this.websiteUrl = pulumi.output(
+      "https://hackfs2023-test.debuggingfuture.com/"
+    );
     this.registerOutputs({
       websiteUrl: this.websiteUrl,
     });

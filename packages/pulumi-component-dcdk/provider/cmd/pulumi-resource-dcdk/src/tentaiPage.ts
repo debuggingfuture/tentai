@@ -11,22 +11,29 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
+import * as path from "path";
+import * as fs from "fs";
 import * as pulumi from "@pulumi/pulumi";
 import * as docker from "@pulumi/docker";
 import { ConstructType } from "./constructType";
-import * as path from "path";
-import * as fs from "fs";
 import { SpheronStaticPage } from "./spheronStaticPage";
+import { BacalhauJobImage } from "./bacalhauJobImage";
 
 // at a tentai page
 // we have hosted
 
 export interface TentaiPageArgs {
-  customTemplate: pulumi.Input<string>;
+  siteTemplate: pulumi.Input<string>;
+  jobImageName: pulumi.Input<string>;
 }
 
 // always build image
+
+export const MODEL_STRATEGIES = {
+  translations: {
+    siteTemplate: "tentai-template-next-ts",
+  },
+};
 
 export class TentaiPage extends pulumi.ComponentResource {
   public readonly websiteUrl: pulumi.Output<string>;
@@ -45,13 +52,15 @@ export class TentaiPage extends pulumi.ComponentResource {
     );
     console.log("templatePath", templatePath);
 
+    // inject jobImageName as site config
+
     const results = new SpheronStaticPage("static-site", {
       folderPath: templatePath,
     });
 
-    this.websiteUrl = pulumi.output("https://www.google.com");
-
-    console.log("static page ", results);
+    this.websiteUrl = pulumi.output(
+      "https://hackfs2023-test.debuggingfuture.com/"
+    );
 
     this.registerOutputs({
       websiteUrl: this.websiteUrl,

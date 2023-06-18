@@ -34,6 +34,7 @@ export class SpheronFolder extends pulumi.CustomResource {
     opts?: pulumi.CustomResourceOptions
   ) {
     super(ConstructType.SpheronFolder, name, args, opts);
+    console.log("SpheronFolder", args);
   }
 }
 

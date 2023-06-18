@@ -1,4 +1,4 @@
-import path from "path";
+import * as path from "path";
 import { Domain, ProtocolEnum } from "@spheron/site";
 import { buildSiteWithTemplate, deploySite, getClientConfig } from "./spheron";
 import {
@@ -85,6 +85,10 @@ describe("spheron", () => {
       __dirname,
       "../../templates/tentai-template-next-ts"
     );
-    await buildSiteWithTemplate("test", templatePath);
+    const { protocolLink, dynamicLinks } = await buildSiteWithTemplate(
+      "test",
+      templatePath
+    );
+    expect(protocolLink).toEqual(expect.any(String));
   });
 });

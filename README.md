@@ -4,6 +4,8 @@
   - make install build_python_sdk
 - When running pulumi setup PYTHONPATH to include the gnereated sdk e.g. export PYTHONPATH=packages/pulumi-component-dcdk/sdk/python/bin
 
+- Note service worker will not be registered at localhost and thus saturn retrieval will fail
+
 ## pulumi deps management
 
 - modified from [pulumi offiical example](https://github.com/pulumi/pulumi-component-provider-ts-boilerplate)which has go dependnecy on codegen

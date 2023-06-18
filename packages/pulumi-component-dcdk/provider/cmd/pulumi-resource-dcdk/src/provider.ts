@@ -130,7 +130,20 @@ export class Provider implements provider.Provider {
     // delegate
 
     if (urn.includes(ConstructType.SpheronFolder)) {
-      await buildSiteWithTemplate(urn, inputs.folderPath);
+      console.log("create match spheron folder");
+      const { protocolLink, dynamicLinks } = await buildSiteWithTemplate(
+        urn,
+        inputs.folderPath
+      );
+
+      return {
+        id: urn,
+        outs: {
+          urn,
+          protocolLink,
+          dynamicLinks,
+        },
+      };
     }
 
     // handle at compile time

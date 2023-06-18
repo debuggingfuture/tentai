@@ -45,8 +45,10 @@ export const matchInputParams = async (inputParams: any) => {
 
         return [_.camelCase(["input", i + 1, "file"].join("")), cid];
       }
+      console.log("yyy", input, input?.type);
     })
   );
+  console.log("fromPairs", results);
   return _.fromPairs(results);
 };
 
@@ -60,9 +62,3 @@ export const mapJobWithModelInput = async (
   const compiledJob = JSON.parse(compiled(inputByKey));
   return createJob(compiledJob);
 };
-
-// export const submitJobWithModel = (inputParmas: any) => {
-//   return createJob({
-//     docker: { image: "ubuntu", entrypoint: ["echo", "hello"] },
-//   });
-// };

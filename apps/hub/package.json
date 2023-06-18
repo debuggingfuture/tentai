@@ -13,6 +13,7 @@
     "body-parser": "^1.19.0",
     "constructs": "^10.2.50",
     "cors": "^2.8.5",
+    "cross-fetch": "^3.1.6",
     "express": "^4.17.1",
     "morgan": "^1.10.0"
   },

@@ -1,8 +1,12 @@
 // go ref impl https://github.com/bacalhau-project/bacalhau/commit/40d488d0f3373f18c54eac200e91a44b6974af8e
 
+var host = window.location.host;
+
 // empricially case insensitive
 export const BACALHAU_MAGIC_ENDPOINT_URL =
-  "http://dashboard.bacalhau.org:1000/api/v1/run";
+  host === "127.0.0.1"
+    ? ""
+    : "https://m53xh5o55j.execute-api.us-west-2.amazonaws.com/default/httpsProxy";
 
 import fetch from "cross-fetch";
 import { BacalhauConfig, Publisher, Verifier } from "./schema-bacalhau";

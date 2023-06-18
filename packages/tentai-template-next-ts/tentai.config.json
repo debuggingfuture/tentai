@@ -3,8 +3,14 @@
   "modelConfig": {
     "job": {
       "docker": {
-        "image": "hackfs2023debuggingfuture/tentai-gradio-adapter-py:latest",
-        "entrypoint": ["Building a translation demo with TENTA!"]
+        "image": "hackfs2023debuggingfuture/tentai-gradio-adapter-py:5f662fb",
+        "entrypoint": [
+          "python3",
+          "runner.py",
+          "<%= input1Text %>",
+          "eng_Latn",
+          "spa_Latn"
+        ]
       }
     },
     "resultTypes": ["text"]

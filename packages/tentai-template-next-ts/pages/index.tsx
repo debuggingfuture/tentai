@@ -1,3 +1,5 @@
+import * as fs from "fs";
+import * as path from "path";
 import * as React from "react";
 import {
   RenderConfig,
@@ -6,12 +8,13 @@ import {
 } from "../components/Widget";
 import { Container, Grid, Paper, Typography } from "@mui/material";
 import { GetStaticProps } from "next/types";
-import fs from "fs";
-import path from "path";
+
+import { ModelConfig } from "../libs/job";
 // https://github.com/dusty-nv/jetson-inference/tree/master
 
-let config = {
+let baseConfig = {
   modelConfig: {
+    name: "hello world",
     job: {
       docker: { image: "ubuntu", entrypoint: ["echo", "hello"] },
     },
@@ -37,7 +40,8 @@ let config = {
 };
 
 export type PageConfig = {
-  modelConfig: any;
+  name: string;
+  modelConfig: ModelConfig;
   renderConfig: RenderConfig;
 };
 
@@ -47,12 +51,13 @@ export const getStaticProps: GetStaticProps<{
   // __dirname will be non usable
   // https://nextjs.org/docs/pages/api-reference/functions/get-static-props#reading-files-use-processcwd
 
-  console.log("process.cwd()", process.cwd());
+  console.log("getStaticProps cwd", process.cwd());
   const rawConfig = fs.readFileSync(
     path.resolve(process.cwd(), "./tentai.config.json")
   );
 
   const config = JSON.parse(rawConfig.toString());
+
   return { props: { config } };
 };
 
@@ -63,7 +68,7 @@ export default function Home({ config }: { config: PageConfig }) {
         <Grid container spacing={2}>
           <Grid container item spacing={2} xs={12}>
             <Grid item xs={4}>
-              <h2>Shilling my AI</h2>
+              <h2>Shilling my AI Model: {config.name} </h2>
             </Grid>
           </Grid>
           <Grid container item xs={12}>

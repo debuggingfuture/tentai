@@ -1,6 +1,6 @@
-import os from "os";
-import path from "path";
-import fs from "fs-extra";
+import * as os from "os";
+import * as path from "path";
+import * as fs from "fs-extra";
 import {
   SpheronClient as SpheronClientSite,
   ProtocolEnum,
@@ -78,7 +78,12 @@ export const createIpfsStaticPageWithFolder = async (
       name,
     });
 
-  console.log("results", { uploadId, bucketId, protocolLink, dynamicLinks });
+  console.log("createIpfsStaticPageWithFolder results", {
+    uploadId,
+    bucketId,
+    protocolLink,
+    dynamicLinks,
+  });
 
   return { uploadId, bucketId, protocolLink, dynamicLinks };
 };
@@ -95,13 +100,13 @@ const TENTAI_CONFIG_FILENAME = "tentai.config.json";
 // TODO refactor
 export const buildSiteWithTemplate = async (
   name: string,
-  folderPath: string
+  templatePath: string
 ) => {
   // TODO use folderPath from input
-  const templatePath = path.resolve(
-    __dirname,
-    "../../templates/tentai-template-next-ts"
-  );
+  // const templatePath = path.resolve(
+  //   __dirname,
+  //   "../../templates/tentai-template-next-ts"
+  // );
   const client = new SpheronClientStorage(getClientConfig());
   console.log("buildSiteWithTemplate");
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "dcdk"));
@@ -117,8 +122,8 @@ export const buildSiteWithTemplate = async (
     modelConfig: {
       job: {
         docker: {
-          image: "hackfs2023debuggingfuture/tentai-gradio-adapter-py:latest",
-          entrypoint: ["Building a translation demo with TENTA!"],
+          image: "hackfs2023debuggingfuture/tentai-gradio-adapter-py:5f662fb",
+          entrypoint: ["<%= input1Text %>", "eng_Latn", "spa_Latn"],
         },
       },
       resultTypes: ["text"],
@@ -141,6 +146,7 @@ export const buildSiteWithTemplate = async (
 
   const configPath = path.resolve(tempDir, "./" + TENTAI_CONFIG_FILENAME);
   fs.writeFileSync(configPath, JSON.stringify(configFileContent));
+  console.log("config in use", configFileContent);
 
   const buildFolder = path.resolve(tempDir, "./out");
   console.log("buildProcess out", buildProcess.stdout.toString());
@@ -152,6 +158,6 @@ export const buildSiteWithTemplate = async (
     name
   );
 
-  console.log("create success", dynamicLinks);
+  console.log("create success 🚀", "https://" + dynamicLinks?.[0]);
   return { protocolLink, dynamicLinks };
 };
