@@ -1,6 +1,6 @@
 # TENTAI✨
 
-- Check out the ETHGLOBAL Project Profile
+- Check out the [ETHGLOBAL Project Profile](https://www.ethglobal.com/showcase/tentai-ub5xn)
 - "Tentai" is Celestial object in Japanese. Code name used in codebase is `dcdk`
 
 ## setup
